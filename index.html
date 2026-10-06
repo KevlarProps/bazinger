@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bazinger</title>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: #000;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    video {
+      width: 100vw;
+      height: 100vh;
+      object-fit: contain;
+      background: #000;
+    }
+  </style>
+</head>
+<body>
+  <video id="player" src="bazinger.mp4" autoplay playsinline preload="auto"></video>
+  <audio id="music" loop preload="auto"></audio>
+  <script>
+    const video = document.getElementById("player");
+    const audio = document.getElementById("music");
+    audio.src = encodeURIComponent("Who will Gru be Tonight!_ (  #shorts   #viral   #despicableme   #minions   #texting   #entertainment   #trending.mp3");
+
+    let frozen = false;
+    let lastTime = 0;
+
+    function freeze() {
+      frozen = true;
+      video.pause();
+      // A few browsers rewind to the first frame once playback ends.
+      if (video.currentTime < 0.05 && lastTime > 0.05) {
+        video.currentTime = lastTime;
+      }
+    }
+
+    video.addEventListener("timeupdate", () => {
+      if (video.currentTime > lastTime) lastTime = video.currentTime;
+      if (frozen) {
+        video.pause();
+        return;
+      }
+    });
+
+    video.addEventListener("ended", freeze);
+
+    video.addEventListener("play", () => {
+      if (frozen) video.pause();
+    });
+
+    function startPlayback() {
+      return Promise.all([video.play(), audio.play()]);
+    }
+
+    startPlayback().catch(() => {
+      const begin = () => {
+        startPlayback();
+        document.removeEventListener("pointerdown", begin);
+        document.removeEventListener("keydown", begin);
+      };
+      document.addEventListener("pointerdown", begin);
+      document.addEventListener("keydown", begin);
+    });
+  </script>
+</body>
+</html>
