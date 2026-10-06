@@ -31,6 +31,7 @@
   <script>
     const video = document.getElementById("player");
     const audio = document.getElementById("music");
+    audio.autoplay = true;
     audio.src = encodeURIComponent("Who will Gru be Tonight!_ (  #shorts   #viral   #despicableme   #minions   #texting   #entertainment   #trending.mp3");
 
     let frozen = false;
@@ -60,18 +61,18 @@
     });
 
     function startPlayback() {
-      return Promise.all([video.play(), audio.play()]);
+      const pending = [audio.play()];
+      if (!frozen) pending.push(video.play());
+      return Promise.all(pending).catch(() => {});
     }
 
-    startPlayback().catch(() => {
-      const begin = () => {
-        startPlayback();
-        document.removeEventListener("pointerdown", begin);
-        document.removeEventListener("keydown", begin);
-      };
-      document.addEventListener("pointerdown", begin);
-      document.addEventListener("keydown", begin);
-    });
+    startPlayback();
+    video.addEventListener("loadeddata", () => startPlayback());
+    audio.addEventListener("loadeddata", () => startPlayback());
+
+    const begin = () => startPlayback();
+    document.addEventListener("pointerdown", begin);
+    document.addEventListener("keydown", begin);
   </script>
 </body>
 </html>
